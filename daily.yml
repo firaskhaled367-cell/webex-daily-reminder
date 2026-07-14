@@ -1,0 +1,27 @@
+name: Daily Islamic Reminder
+
+on:
+  schedule:
+    # Runs at 05:00 UTC every day — adjust the hour to match your timezone.
+    # e.g. for Amman (UTC+3 in winter, UTC+3 currently), 05:00 UTC = 08:00 local.
+    - cron: '0 5 * * *'
+  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab
+
+jobs:
+  send-reminder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Send today's reminder
+        env:
+          WEBEX_BOT_TOKEN: ${{ secrets.WEBEX_BOT_TOKEN }}
+          WEBEX_ROOM_ID: ${{ secrets.WEBEX_ROOM_ID }}
+        run: python daily_message.py
